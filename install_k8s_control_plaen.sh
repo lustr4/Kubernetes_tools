@@ -31,7 +31,7 @@ EOF
 sudo sysctl --system
 
 sudo apt-get update
-sudo apt-get install \
+sudo apt-get install -y \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -48,7 +48,7 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo mkdir -p /etc/containerd
 sudo bash -c 'containerd config default > /etc/containerd/config.toml'
 sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
@@ -61,7 +61,7 @@ curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-get install -y kubelet=1.28.0 kubectl=1.28.0 kubeadm=1.28.0
 sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo systemctl start kubelet
@@ -70,7 +70,7 @@ sudo systemctl enable kubelet
 # Remove missing `cni-dir` argument from kubelet if present
 sed -i 's/KUBELET_ARGS=.*/KUBELET_ARGS=/' /etc/kubernetes/kubelet.env
 
-sudo kubeadm init --pod-network-cidr=10.244.0.0/16\
+sudo kubeadm init --pod-network-cidr=192.168.1.0/16\
   --cri-socket unix:///run/containerd/containerd.sock
 
 mkdir -p $HOME/.kube
@@ -79,9 +79,9 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 sleep 5
 
-kubectl taint nodes --all node-role.kubernetes.io/control-plane-
-kubectl taint nodes --all node-role.kubernetes.io/master-
+# Remove taint from node if we want :-)
+# kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+# kubectl taint nodes --all node-role.kubernetes.io/master-
 
 # Install calico
-kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
