@@ -1,6 +1,6 @@
 # Kubernetes_tools
 ##  Ubuntu 22.04 Kubernetes v1.28 install instructions
-Installation instructions for Kubernetes v1.28 on Ubuntu 22.04 with containerd as the container runtime and calicol as the CNI plugin.
+Installation instructions for Kubernetes v1.28 on Ubuntu 22.04 with containerd as the container runtime and calico as the CNI plugin.
 ###  How to install control plane
 Run script install_k8s_wcontrol_plane.sh
 
